@@ -1,473 +1,190 @@
 # Customer Insights Intelligence
 
-> **AI-powered Customer Insights Intelligence platform that transforms fragmented customer feedback into actionable insights and evidence-backed product opportunities.**
+> **AI-powered Customer Insights platform that transforms fragmented qualitative feedback into evidence-backed customer problems and product opportunities.**
 
-## What Product is this?
+**Product principle: AI assists; Product Managers decide.**
 
-Customer Insights Intelligence is a web application designed to help Product Managers understand large volumes of qualitative customer feedback.
+## What Product Is This?
 
-Customer feedback is often distributed across support tickets, NPS/CSAT surveys, product reviews, Sales conversations, Customer Success interactions, and user research.
+Customer Insights Intelligence is a GenAI-powered web application designed to help Product Managers understand qualitative customer feedback distributed across sources such as Support, Sales, Customer Success, surveys, product reviews, and user research.
 
-The platform brings these signals together, uses AI to identify recurring customer problems and patterns, and allows Product Managers to investigate those insights through an interactive dashboard and natural-language questions.
+The application uses AI to interpret customer feedback, discover recurring customer problems, synthesize potential product opportunities, and allow PMs to investigate the underlying evidence through natural-language questions.
 
-AI-generated insights remain connected to the underlying customer evidence so Product Managers can evaluate the evidence before making product decisions.
-
-> **Product principle: AI assists; Product Managers decide.**
-
----
+AI-generated insights remain connected to customer evidence so the PM — not the model — makes the product decision.
 
 ## The Problem
 
-Product teams can receive thousands of qualitative customer signals across multiple channels.
+Product teams can receive thousands of qualitative customer signals across different tools and teams. Manually synthesizing that information is time-consuming, fragmented, and vulnerable to anecdotal or recent feedback.
 
-Manually synthesizing this feedback can be:
+The core questions are:
 
-* Time-consuming
-* Fragmented across tools and teams
-* Difficult to quantify
-* Influenced by recent or anecdotal feedback
-* Difficult to connect directly to product opportunities
-
-The challenge is not simply collecting more feedback. The challenge is determining:
-
-* What problems occur repeatedly?
-* Which problems are increasing?
+* What customer problems occur repeatedly?
 * Which customer segments are affected?
 * How severe are those problems?
-* What customer evidence supports an insight?
+* What evidence supports an insight?
 * Which problems deserve deeper product investigation?
 
----
+## Target User
 
-## Who Is This For?
+**Primary:** Product Managers working with moderate-to-large volumes of qualitative customer feedback.
 
-### Primary User
+Potential secondary users include Product Operations, Product Leadership, Customer Success, and UX Research.
 
-**Product Managers working with moderate-to-large volumes of qualitative customer feedback.**
+## Working MVP
 
-The Product Manager is responsible for translating customer signals into product problems, opportunities, experiments, prioritization decisions, and roadmap discussions.
+### AI-Discovered Product Opportunities
 
-Potential secondary users include:
+The MVP analyzes individual customer signals, represents the underlying problems semantically, discovers related feedback, and synthesizes evidence-backed product opportunities.
 
-* Product Operations
-* Product Leadership
-* Customer Success
-* UX Research
+![Product Opportunities](docs/screenshots/product-opportunities.png)
 
----
+### Ask Customer Insights — RAG
 
-# Product Experience
+Product Managers can also investigate the analyzed feedback using natural-language questions.
 
-The MVP is designed around three primary Product Manager experiences.
+The application retrieves semantically relevant customer evidence and supplies that evidence to the LLM so the generated response remains grounded in the available customer data.
 
-## 1. Customer Insights Dashboard
+![Ask Customer Insights](docs/screenshots/rag-customer-insights.png)
 
-When the Product Manager opens the application, the dashboard provides a summarized view of customer feedback.
-
-The dashboard will surface information such as:
-
-* Number of feedback records analyzed
-* Overall customer sentiment
-* Top recurring customer problems
-* Emerging themes
-* Affected customer segments
-* Problem frequency
-* Trend direction
-
-For example, the PM might see:
-
-| Customer Problem   | Signals | Insight          |
-| ------------------ | ------: | ---------------- |
-| Mobile Onboarding  |     184 | Emerging problem |
-| Reporting & Export |     147 | Enterprise-heavy |
-| Authentication     |     121 | Recurring issue  |
-
-The PM can select a customer problem and inspect the evidence supporting the insight.
-
----
-
-## 2. Customer Evidence & Product Opportunity
-
-When the PM selects a customer problem, the application displays additional context.
-
-For example:
-
-### Reporting & Export
-
-**Customer signals:** 147
-**Primary affected segment:** Enterprise
-
-**Recurring problems:**
-
-* Limited export formats
-* Large reports timing out
-* Lack of scheduled report delivery
-
-**Supporting customer evidence:**
-
-* F104 — "We need Excel export..."
-* F281 — "Large reports keep timing out..."
-* F390 — "We need scheduled reports..."
-
-The PM can use this evidence to determine whether the problem deserves deeper investigation.
-
-The application surfaces evidence and potential product opportunities. It does **not** autonomously determine what should be placed on the product roadmap.
-
----
-
-## 3. Ask Customer Insights
-
-The PM can also investigate customer feedback using natural-language questions.
-
-Example:
-
-> **What problems are enterprise customers experiencing with reporting?**
-
-The system retrieves relevant customer feedback and provides that evidence to the LLM.
-
-The resulting response might identify recurring issues such as:
-
-1. Limited export formats
-2. Large-report timeouts
-3. Lack of scheduled report delivery
-
-The response also displays the customer-feedback records supporting those conclusions.
-
-This allows the PM to evaluate the evidence instead of treating the AI response as ground truth.
-
----
-
-# End-to-End Product Workflow
+## How the GenAI Workflow Works
 
 ```mermaid
 flowchart TD
-    A[Customer Feedback Sources] --> B[Customer Feedback Knowledge Base]
+    A[Customer Feedback] --> B[LLM Interpretation]
+    B --> C[Theme / Problem / Sentiment / Severity]
+    C --> D[Embeddings]
+    D --> E[Semantic Similarity]
+    E --> F[Problem Clustering]
+    F --> G[LLM Problem Synthesis]
+    F --> H[Evidence Aggregation]
+    G --> I[Product Opportunities]
+    H --> I
 
-    A1[Support Tickets] --> A
-    A2[NPS / CSAT] --> A
-    A3[Product Reviews] --> A
-    A4[Sales Feedback] --> A
-    A5[Customer Success] --> A
-    A6[User Research] --> A
-
-    B --> C[AI Feedback Analysis]
-
-    C --> C1[Themes]
-    C --> C2[Sentiment]
-    C --> C3[Severity]
-    C --> C4[Customer Problems]
-
-    C --> D[Customer Insights Dashboard]
-
-    D --> E[Customer Evidence]
-    D --> F[Product Opportunities]
-
-    D --> G[PM Asks Natural-Language Question]
-
-    G --> H[Semantic Retrieval]
-    H --> I[Relevant Customer Feedback]
-    I --> J[LLM + Retrieved Evidence]
-
-    J --> K[Evidence-Grounded Answer]
-
-    K --> L[Product Manager Decision]
-
-    L --> M[Investigate]
-    L --> N[Experiment]
-    L --> O[Prioritize]
-    L --> P[Monitor]
+    J[PM Question] --> K[Question Embedding]
+    K --> L[Semantic Retrieval]
+    D --> L
+    L --> M[Relevant Customer Evidence]
+    M --> N[LLM + Retrieved Evidence]
+    N --> O[Evidence-Grounded Answer]
 ```
 
----
+### Why combine LLMs, embeddings, and deterministic code?
 
-# How the GenAI Experience Works
+**LLM / Generative AI**
 
-Three concepts are important to distinguish.
+* Interpret qualitative feedback
+* Identify underlying customer problems
+* Assess sentiment and severity
+* Synthesize related feedback into product opportunities
+* Generate evidence-grounded answers
 
-## Knowledge Base
+**Embeddings**
 
-The **knowledge base** contains the customer information the application can search and analyze.
+* Represent customer problems semantically
+* Identify semantically related feedback
+* Retrieve relevant evidence for RAG
 
-For the MVP, this will be a synthetic customer-feedback dataset representing:
+**Deterministic Python**
 
-* Support tickets
-* NPS / CSAT comments
-* Product reviews
-* Sales feedback
-* Customer Success feedback
-* User research
+* Calculate cosine similarity
+* Perform threshold-based clustering
+* Aggregate evidence and metadata
+* Orchestrate the end-to-end workflow
 
-Using synthetic data allows us to demonstrate the complete workflow without exposing real customer information or personally identifiable information.
+> **Design principle: Use deterministic computation where possible and GenAI where semantic interpretation or generation adds value.**
 
-A production version could eventually connect directly to enterprise customer-feedback systems.
+## MVP Technical Architecture
 
----
+| Component       | Technology        | Purpose                                      |
+| --------------- | ----------------- | -------------------------------------------- |
+| Language        | Python            | Application and AI workflow                  |
+| Web UI          | Streamlit         | Interactive MVP                              |
+| Data Processing | Pandas            | Feedback processing                          |
+| LLM             | OpenAI API        | Interpretation and synthesis                 |
+| Embeddings      | OpenAI Embeddings | Semantic representation and retrieval        |
+| Similarity      | Cosine similarity | Feedback comparison                          |
+| Data            | Synthetic CSV     | Lightweight customer-feedback knowledge base |
+| Validation      | Pydantic          | Structured LLM outputs                       |
+| Source Control  | GitHub            | Versioning and portfolio documentation       |
 
-## User Prompt
+Synthetic data is intentionally used so the complete workflow can be demonstrated without exposing real customer information or PII.
 
-The **user prompt** is the question entered by the Product Manager.
+## Evaluation & Learnings
 
-For example:
+The prototype was tested end to end on a small synthetic customer-feedback dataset.
 
-> **What are enterprise customers struggling with during onboarding?**
+A semantic-similarity sanity test produced:
 
-The prompt represents what the PM wants to learn.
+* **Related feedback:** `0.821`
+* **Unrelated feedback:** `0.219`
 
-The prompt is different from the knowledge base.
+The full pipeline successfully processed 20 customer signals through LLM interpretation, embeddings, semantic clustering, evidence aggregation, and opportunity synthesis.
 
-**Knowledge Base = customer information available to the system**
+RAG testing successfully retrieved relevant evidence for a question about large-report export problems and generated a grounded answer that distinguished directly supporting evidence from adjacent evidence.
 
-**User Prompt = question the PM wants answered**
+### Current limitation
 
----
+The MVP uses a lightweight threshold-based clustering strategy where records are compared against a representative record from each cluster.
 
-## Retrieval-Augmented Generation (RAG)
+Initial evaluation showed that a `0.80` similarity threshold can over-segment some semantically related customer feedback. A production implementation would evaluate threshold calibration and more robust clustering techniques against a larger labeled dataset.
 
-The application does not simply send the PM's question directly to the LLM.
+This is intentionally treated as an evaluation finding rather than hard-coding the expected groups.
 
-Instead, it first retrieves customer feedback relevant to the question.
+## Product Hypothesis
 
-```mermaid
-flowchart LR
-    A[PM Question] --> B[Semantic Retrieval]
-    B --> C[Relevant Customer Feedback]
-    C --> D[Question + Evidence]
-    D --> E[LLM]
-    E --> F[Evidence-Grounded Answer]
-    F --> G[Supporting Customer Feedback]
-```
+> **If Product Managers can use AI to identify recurring customer problems across fragmented feedback while retaining access to the underlying customer evidence, they can move from customer signals to actionable product opportunities faster and with greater confidence.**
 
-This pattern is known as **Retrieval-Augmented Generation (RAG)**.
+## MVP Scope
 
-RAG helps ground generated responses in application-specific customer evidence rather than relying solely on the model's pre-trained knowledge.
+**Implemented**
 
-RAG does not eliminate hallucination risk. Retrieval quality and answer grounding therefore need to be evaluated separately.
-
----
-
-# What Uses AI — and What Does Not?
-
-The application intentionally does not use an LLM for every operation.
-
-## LLM / Semantic AI
-
-Used where understanding or generating natural language is valuable:
-
-* Understanding qualitative customer feedback
-* Theme identification
-* Customer-problem extraction
-* Sentiment and severity interpretation
-* Product-opportunity summarization
-* Natural-language Q&A
-* Evidence synthesis
-
-## Deterministic Analytics
-
-Used where conventional computation is more reliable:
-
-* Counting feedback records
-* Filtering customer segments
-* Calculating percentages
-* Aggregating classified themes
-* Measuring trends
-* Calculating product metrics
-
-> **Design principle: Use deterministic computation where possible and GenAI where semantic interpretation or generation is required.**
-
----
-
-# MVP Technical Architecture
-
-```mermaid
-flowchart TD
-    UI[Streamlit Web UI]
-
-    UI --> APP[Python Application Services]
-
-    APP --> ANALYTICS[Analytics Service]
-    APP --> LLM[LLM Service]
-    APP --> RAG[RAG Service]
-
-    RAG --> EMB[Embeddings]
-    EMB --> VECTOR[Vector Search]
-
-    ANALYTICS --> KB[Customer Feedback Knowledge Base]
-    LLM --> KB
-    VECTOR --> KB
-```
-
----
-
-## Technology Choices
-
-| Component       | MVP Technology     | Purpose                                          |
-| --------------- | ------------------ | ------------------------------------------------ |
-| Language        | Python             | Application and AI development                   |
-| Web UI          | Streamlit          | Rapid interactive MVP development                |
-| Data Processing | Pandas             | Feedback processing and deterministic analytics  |
-| LLM             | LLM API            | Qualitative analysis and insight generation      |
-| Embeddings      | Embedding model    | Semantic representation of feedback              |
-| Vector Search   | Local vector store | Retrieve semantically relevant customer evidence |
-| Data            | CSV / JSON         | Lightweight MVP knowledge base                   |
-| Testing         | pytest             | Application and AI evaluation tests              |
-| Source Control  | GitHub             | Versioning, documentation, and portfolio         |
-
----
-
-## Why Streamlit for the MVP?
-
-The MVP optimizes for **learning velocity and end-to-end validation rather than production frontend architecture**.
-
-Streamlit allows the user interface, data workflow, and AI capabilities to be developed using a single Python stack.
-
-A production implementation could separate:
-
-* Frontend application
-* API layer
-* AI services
-* Data persistence
-* Authentication and authorization
-* Monitoring and observability
-* Enterprise integrations
-
-This allows the MVP to focus on validating the GenAI product experience without introducing unnecessary frontend and infrastructure complexity.
-
----
-
-# MVP Scope
-
-The initial MVP demonstrates:
-
-**Customer Feedback → AI Analysis → Themes & Problems → Insights Dashboard → Customer Evidence → RAG Q&A → Product Opportunity**
-
-## MVP Capabilities
-
-* Customer-feedback ingestion
-* Theme identification
-* Sentiment classification
-* Severity classification
-* Customer-problem aggregation
-* Evidence linking
-* Product-opportunity summaries
-* Product Manager dashboard
+* Synthetic customer-feedback ingestion
+* Structured LLM feedback analysis
+* Theme, sentiment, severity, and customer-problem extraction
+* Embedding generation
+* Semantic similarity and problem discovery
+* Evidence aggregation
+* Product-opportunity synthesis
+* Streamlit interface
 * Semantic retrieval
 * RAG-based Customer Insights Q&A
+* Evidence-grounded responses
 * Basic AI evaluation
 
-## Not in the MVP
+**Future improvements**
 
-* Production Salesforce or Zendesk integrations
-* Real customer PII
-* Autonomous product prioritization
-* Automatic roadmap modification
-* Enterprise authentication
-* Production-scale infrastructure
-* Multi-agent workflows
+* Larger evaluation dataset
+* Improved clustering and threshold calibration
+* Persistent vector storage
+* Incremental processing and embedding reuse
+* Asynchronous/batched processing
+* Retrieval-quality evaluation
+* Cost and latency observability
+* Enterprise feedback-system integrations
+* Authentication, authorization, and data governance
 
----
-
-# Product Hypothesis
-
-> **If Product Managers can use AI to identify recurring customer problems across fragmented feedback while retaining access to the underlying customer evidence and relevant business context, they can move from customer signals to actionable product opportunities faster and with greater confidence.**
-
----
-
-# Product Principles
+## Product Principles
 
 1. **Customer problems before features**
 2. **Evidence before recommendations**
 3. **AI assists; Product Managers decide**
-4. **Insights should be traceable to customer evidence**
+4. **Insights should remain traceable to customer evidence**
 5. **Use deterministic computation where possible**
-6. **Uncertainty should be visible**
-7. **Product opportunities should connect to measurable outcomes**
+6. **Make uncertainty visible**
+
+## Project Documentation
+
+| Document                                                           | Purpose                                                            |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| [Problem Statement](docs/discovery/problem-statement.md)           | Problem context, user pain points, opportunity, and assumptions    |
+| [MVP Product Requirements](docs/product/prd.md)                    | Users, JTBD, requirements, scope, metrics, and acceptance criteria |
+| [Product Roadmap](docs/product/roadmap.md)                         | Outcome-based product evolution                                    |
+| [Technical Program Execution Plan](docs/program/execution-plan.md) | Workstreams, dependencies, milestones, risks, and success criteria |
+
+## Portfolio Focus
+
+This project demonstrates hands-on experience across **Product Management, Technical Product Management, Technical Program Management, and GenAI application development**, including product discovery, requirements, architecture, LLM integration, embeddings, semantic retrieval, RAG, evidence grounding, AI evaluation, technical trade-offs, and end-to-end MVP execution.
 
 ---
 
-# Product Roadmap
-
-**Product Discovery → Feedback-to-Insight MVP → Evidence-Grounded AI / RAG → Product Decision Intelligence → Workflow Integrations → Enterprise Readiness**
-
-The MVP focuses on proving the **feedback → insight → evidence → product opportunity** workflow before introducing enterprise-scale integrations and advanced decision-support capabilities.
-
----
-
-# Current Project Status
-
-## Milestone 1 — Product Definition ✅
-
-Completed:
-
-* Problem definition
-* Product hypothesis
-* MVP requirements
-* Product roadmap
-* Technical program execution plan
-
-## Milestone 2 — Technical Design 🔄
-
-Current focus:
-
-* System architecture
-* Data model
-* LLM workflow
-* RAG architecture
-* AI evaluation strategy
-
-## Milestone 3 — MVP Implementation
-
-Next:
-
-* Synthetic feedback dataset
-* Feedback-analysis pipeline
-* LLM integration
-* Streamlit dashboard
-* Semantic retrieval
-* RAG Q&A
-* AI evaluation
-
----
-
-# Project Documentation
-
-The README provides the end-to-end project overview. Detailed product and program artifacts are maintained separately.
-
-| Document                                                           | Purpose                                                                    |
-| ------------------------------------------------------------------ | -------------------------------------------------------------------------- |
-| [Problem Statement](docs/discovery/problem-statement.md)           | Problem context, user pain points, opportunity, and assumptions            |
-| [MVP Product Requirements](docs/product/prd.md)                    | Users, JTBD, requirements, MVP scope, metrics, and acceptance criteria     |
-| [Product Roadmap](docs/product/roadmap.md)                         | Outcome-based evolution of the product                                     |
-| [Technical Program Execution Plan](docs/program/execution-plan.md) | Workstreams, dependencies, milestones, risks, and program success criteria |
-
-Additional architecture and AI-evaluation documentation will be added as implementation progresses.
-
----
-
-# Portfolio Focus
-
-This project demonstrates end-to-end Product Management, Technical Product Management, and Technical Program Management concepts across:
-
-* Product discovery
-* Customer problem definition
-* Product strategy
-* Requirements definition
-* Jobs to Be Done
-* MVP prioritization
-* Roadmap development
-* GenAI product design
-* Technical architecture
-* Cross-functional program planning
-* Dependency management
-* Risk management
-* LLM integration
-* Prompt design
-* Semantic retrieval
-* Retrieval-Augmented Generation (RAG)
-* Evidence grounding
-* AI evaluation
-* Product analytics
-* MVP development
-
----
-
-*This project is under active development. Product assumptions, architecture decisions, and implementation details will evolve as the MVP is built and evaluated.*
+*Portfolio prototype built to explore how GenAI can augment — rather than replace — evidence-based product decision making.*
