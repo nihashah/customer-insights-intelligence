@@ -1,7 +1,7 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
-*$py.class
+*$py.class.env
 
 # C extensions
 *.so
@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+.venv/
+.env
+__pycache__/
